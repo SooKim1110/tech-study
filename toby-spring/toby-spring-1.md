@@ -32,7 +32,7 @@ public void add(User user) throws ClassNotFoundException, SQLException {
 
 관심사의 분리
 - 관심사의 분리: 관심이 같은 것끼리는 하나의 객체 안으로, 관심이 다른 것끼리는 서로 영향을 주지 않도록 분리
-- 개발자가 객체를 설계할 때 가장 염두에 둬야 할 상황은 미래의 변화를 어떻게 대비할 것인가 이다. 미래를 준비하는 데 있어 가장 중요한 과제는 변화에 대비할 것인가이고, 가장 좋은 대책은 변화의 폭을 최소한으로 줄요주는 것이다.
+- 개발자가 객체를 설계할 때 가장 염두에 둬야 할 상황은 미래의 변화를 어떻게 대비할 것인가 이다. 미래를 준비하는 데 있어 가장 중요한 과제는 변화에 대비할 것인가이고, 가장 좋은 대책은 변화의 폭을 최소한으로 줄여주는 것이다.
 
 ### 상속을 통한 확장
 ```java
@@ -93,7 +93,7 @@ public class SimpleConnectionMaker {
 두 클래스 중간에 추상적인 느슨한 연결고리. 
 ```java
 public class UserDao {
-    private final ConnectionMaker connectionMaker = new DConnectionMaker();
+    private final ConnectionMaker connectionMaker = new NConnectionMaker();
 }
 
 public interface ConnectionMaker {
@@ -119,7 +119,7 @@ UserDao와 ConnectionMaker 구현 클래스의 관계를 결정해주는 기능�
 ```java
 public class UserDaoTest { // 클라이언트로 생성 이동
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        UserDao dao = new UserDao(new DConnectionMaker());
+        UserDao dao = new UserDao(new NConnectionMaker());
 		}
 }
 
@@ -203,10 +203,23 @@ IoC 컨테이너에 의해 관리되는 애플리케이션 오브젝트를 구�
 서블릿은 대부분 멀티스레드에서 싱글톤으로 동작하는데 서블릿 클래스당 하나의 오브젝트만 만들어두고, 사용자의 요청을 담당하는 여러 스레드들이 이 오브젝트를 공유해서 사용한다.
 
 ### 자바 싱글톤 구현 한계
+```
+public class SingleTonInstance {
+    private static SingleTonInstance INSTANCE;
+
+    public synchronized static SingleTonInstance getINSTANCE() {
+        
+        if(INSTANCE == null){
+           INSTANCE = new SingleTonInstance(); 
+        }
+        return INSTANCE;
+    }
+}
+```
 1) private 생성자를 가지고 있어 상속할 수 없다.
 2) 싱글톤은 테스트하기가 힘들다
 3) 서버 환경에서는 싱글톤이 하나만 만들어지는 것을 보장하지 못한다.
-4) 싱글톤의 사용은 전역 상태를 만들 수 있어서 바람직하지 못하다.
+4) 싱글톤은 static 메소드를 사용해 쉽게 접근이 가능해 전역 상태로 사용되기 쉬워서 바람직하지 못하다.
 
 ### Singleton Registry
 위의 문제 때문에, 스프링은 직접 싱글톤 형태의 오브젝트를 만들고 관리하는 기능을 제공.
